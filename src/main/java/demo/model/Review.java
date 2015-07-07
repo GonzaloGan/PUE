@@ -1,11 +1,9 @@
 package demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.*;
+import java.util.Date;
 
 /** 
  * Created by Gonzalo on 01/07/2015.
@@ -22,15 +20,12 @@ public class Review {
 
 	private Date date;
 
-	@JsonIgnore
     @ManyToOne
 	private Project project;
 
-	@JsonIgnore 
     @ManyToOne
     private Developer developer;
 
-	@JsonIgnore
 	@ManyToOne
 	private Speciality speciality;
 	

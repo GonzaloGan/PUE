@@ -28,6 +28,7 @@ public class Speciality {
     @ManyToMany(mappedBy = "specialties")
     private Set<Project> projects = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "speciality")
     private Set<Review> reviews = new HashSet<>();
 

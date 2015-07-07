@@ -38,8 +38,9 @@ public class Project {
     // Many Projects to Many Specialties
     @ManyToMany
     private Set<Speciality> specialties = new HashSet<>();
-	
-	@OneToMany(mappedBy = "project")
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "project")
 	private Set<Review> reviews = new HashSet<>();
 
     // void Constructor para Hibernate

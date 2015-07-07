@@ -24,8 +24,9 @@ public class Developer extends Employee {
 	// Many Developers to Many Specialties
     @ManyToMany
 	private Set<Speciality> specialties = new HashSet<>();
-	
-	@OneToMany(mappedBy = "developer")
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "developer")
 	private Set<Review> review = new HashSet<>();
 
     // void Constructor para Hibernate

@@ -81,9 +81,9 @@ public class ReviewController {
 
         return review;
     }
-    @RequestMapping(value ="/projects/{idProject}/developers/{idDeveloper}/specialities/{idSpeciality}/review", method= RequestMethod.GET)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Review seeReview(@PathVariable Long idProject, @PathVariable Long idDeveloper,@PathVariable Long idSpeciality) {
+    @RequestMapping(value ="/projects/{idProject}/developers/{idDeveloper}/specialities/{idSpeciality}/review",
+            method= RequestMethod.GET)
+    public Review getReview(@PathVariable Long idProject, @PathVariable Long idDeveloper,@PathVariable Long idSpeciality) {
 
         // Instanciamos un projecto a partir del id recibido
         Project project = projectRepository.findOne(idProject);
@@ -115,13 +115,14 @@ public class ReviewController {
         if ( ! developer.getSpecialties().contains(speciality) )
             throw new ReviewDeveloperSpecialityException(idDeveloper, idSpeciality);
 
-        review.setDate(new Date());
-        review.setProject(project);
-        review.setDeveloper(developer);
-        review.setSpeciality(speciality);
+        Review review = reviewRepository.findByProjectIdAndSpecialityId(idProject, idSpeciality).get(0);
 
-        reviewRepository.save(review);
 
         return review;
     }
+ /*   @RequestMapping(value = "/developers/{idDeveloper}/specialities/{idSpeciality}/reviews/statistics",
+    method = RequestMethod.GET)
+    public void statistics(@PathVariable Long idDeveloper, @PathVariable Long idSpeciality){
+
+    }*/
 }
