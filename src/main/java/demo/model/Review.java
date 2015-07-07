@@ -78,6 +78,7 @@ public class Review {
 	@Override
 	public String toString() {
 		return "Review{" +
+				"id=" + id +
 				"score=" + score +
 				"date=" + date +
 				'}';

@@ -41,36 +41,11 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public Review addReview(@PathVariable Long idProject, @PathVariable Long idDeveloper,@PathVariable Long idSpeciality,
 	@RequestBody Review review ) {
-		
-		// Instanciamos un projecto a partir del id recibido 
-        Project project = projectRepository.findOne(idProject);
+        CheckParameters checkParameters = new CheckParameters(idProject, idDeveloper, idSpeciality).invoke();
+        Project project = checkParameters.getProject();
+        Developer developer = checkParameters.getDeveloper();
+        Speciality speciality = checkParameters.getSpeciality();
 
-		// Si no existe lanzamos excepcion 
-        if (project == null)
-            throw new ProjectException(idProject);
-
-		// Instanciamos un developer a partir del id recibido 
-        Developer developer = developerRepository.findOne(idDeveloper);
-		
-		// Si no existe lanzamos excepcion
-        if (developer == null)
-            throw new DeveloperException(idDeveloper);
-
-        Speciality speciality = specialityRepository.findOne(idSpeciality);
-
-        if (speciality == null)
-            throw new SpecialityException(idSpeciality);
-			
-		/*  */
-		if ( ! developer.getProjects().contains(project) )
-			throw new ReviewDeveloperProjectException(idProject, idDeveloper);
-		
-		
-		if ( ! project.getSpecialties().contains(speciality) )
-		    throw  new ReviewProjectSpecialityException(idProject, idSpeciality);
-		
-        if ( ! developer.getSpecialties().contains(speciality) )
-            throw new ReviewDeveloperSpecialityException(idDeveloper, idSpeciality);
 
         review.setDate(new Date());
         review.setProject(project);
@@ -81,46 +56,81 @@ public class ReviewController {
 
         return review;
     }
+
     @RequestMapping(value ="/projects/{idProject}/developers/{idDeveloper}/specialities/{idSpeciality}/review",
             method= RequestMethod.GET)
     public Review getReview(@PathVariable Long idProject, @PathVariable Long idDeveloper,@PathVariable Long idSpeciality) {
 
-        // Instanciamos un projecto a partir del id recibido
-        Project project = projectRepository.findOne(idProject);
-
-        // Si no existe lanzamos excepcion
-        if (project == null)
-            throw new ProjectException(idProject);
-
-        // Instanciamos un developer a partir del id recibido
-        Developer developer = developerRepository.findOne(idDeveloper);
-
-        // Si no existe lanzamos excepcion
-        if (developer == null)
-            throw new DeveloperException(idDeveloper);
-
-        Speciality speciality = specialityRepository.findOne(idSpeciality);
-
-        if (speciality == null)
-            throw new SpecialityException(idSpeciality);
-
-		/*  */
-        if ( ! developer.getProjects().contains(project) )
-            throw new ReviewDeveloperProjectException(idProject, idDeveloper);
+        CheckParameters checkParameters = new CheckParameters(idProject, idDeveloper, idSpeciality).invoke();
 
 
-        if ( ! project.getSpecialties().contains(speciality) )
-            throw  new ReviewProjectSpecialityException(idProject, idSpeciality);
-
-        if ( ! developer.getSpecialties().contains(speciality) )
-            throw new ReviewDeveloperSpecialityException(idDeveloper, idSpeciality);
-
-        Review review = reviewRepository.findByProjectIdAndSpecialityId(idProject, idSpeciality).get(0);
+        Review review = reviewRepository.findByProjectIdAndSpecialityIdAndDeveloperId(
+                idProject, idSpeciality, idDeveloper);
 
 
         return review;
     }
- /*   @RequestMapping(value = "/developers/{idDeveloper}/specialities/{idSpeciality}/reviews/statistics",
+
+    private class CheckParameters {
+        private Long idProject;
+        private Long idDeveloper;
+        private Long idSpeciality;
+        private Project project;
+        private Developer developer;
+        private Speciality speciality;
+
+        public CheckParameters(Long idProject, Long idDeveloper, Long idSpeciality) {
+            this.idProject = idProject;
+            this.idDeveloper = idDeveloper;
+            this.idSpeciality = idSpeciality;
+        }
+
+        public Project getProject() {
+            return project;
+        }
+
+        public Developer getDeveloper() {
+            return developer;
+        }
+
+        public Speciality getSpeciality() {
+            return speciality;
+        }
+
+        public CheckParameters invoke() {
+            // Instanciamos un projecto a partir del id recibido
+            project = projectRepository.findOne(idProject);
+
+            // Si no existe lanzamos excepcion
+            if (project == null)
+                throw new ProjectException(idProject);
+
+            // Instanciamos un developer a partir del id recibido
+            developer = developerRepository.findOne(idDeveloper);
+
+            // Si no existe lanzamos excepcion
+            if (developer == null)
+                throw new DeveloperException(idDeveloper);
+
+            speciality = specialityRepository.findOne(idSpeciality);
+
+            if (speciality == null)
+                throw new SpecialityException(idSpeciality);
+
+		/*  */
+            if ( ! developer.getProjects().contains(project) )
+                throw new ReviewDeveloperProjectException(idProject, idDeveloper);
+
+
+            if ( ! project.getSpecialties().contains(speciality) )
+                throw  new ReviewProjectSpecialityException(idProject, idSpeciality);
+
+            if ( ! developer.getSpecialties().contains(speciality) )
+                throw new ReviewDeveloperSpecialityException(idDeveloper, idSpeciality);
+            return this;
+        }
+    }
+   /* @RequestMapping(value = "/developers/{idDeveloper}/specialities/{idSpeciality}/reviews/statistics",
     method = RequestMethod.GET)
     public void statistics(@PathVariable Long idDeveloper, @PathVariable Long idSpeciality){
 
